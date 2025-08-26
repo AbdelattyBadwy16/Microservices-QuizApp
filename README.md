@@ -60,7 +60,8 @@ It consists of multiple independent services communicating through **Eureka Serv
 - Service registry for all microservices.  
 - Displays the registered instances and their status via UI.
 
-  ![Uploading Screenshot From 2025-08-26 22-30-35.png…]()
+ <img width="1911" height="486" alt="Screenshot From 2025-08-26 22-30-35" src="https://github.com/user-attachments/assets/d4b8bd7c-8fa5-4496-8806-a0ee93fa1288" />
+
 
 
 ---
