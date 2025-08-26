@@ -2,6 +2,7 @@ package com.projects.quiz_service.service;
 
 
 import com.projects.quiz_service.dao.QuizDao;
+import com.projects.quiz_service.feign.QuizInterface;
 import com.projects.quiz_service.model.QuestionWrapper;
 import com.projects.quiz_service.model.Quiz;
 import com.projects.quiz_service.model.Response;
@@ -19,41 +20,29 @@ import java.util.Optional;
 public class QuizService {
     @Autowired
     QuizDao quizDao;
-//    @Autowired
-//    QuestionDao questionDao;
+    @Autowired
+    QuizInterface quizInterface;
 
     public ResponseEntity<String> createQuiz(String category, int numQ, String title) {
-//        RestTemplate
-//        List<Integer> questions = ;
-//
-//        Quiz quiz = new Quiz();
-//        quiz.setTitle(title);
-//        quiz.setQuestions(questions);
-//        quizDao.save(quiz);
+
+        List<Integer> questions = quizInterface.getQuestionsForQuiz(category,numQ).getBody();
+        Quiz quiz = new Quiz();
+        quiz.setTitle(title);
+        quiz.setQuestionIds(questions);
+        quizDao.save(quiz);
 
         return new ResponseEntity<>("Success", HttpStatus.CREATED);
     }
 
     public ResponseEntity<List<QuestionWrapper>> getQuizQuestions(Integer id) {
-//        Optional<Quiz> quiz = quizDao.findById(id);
-//        List<Question> questionFromDb = quiz.get().getQuestions();
-        List<QuestionWrapper> questionForUser = new ArrayList<>();
-//        for(Question q : questionFromDb){
-//            QuestionWrapper qw = new QuestionWrapper(q.getId(),q.getQuestionTitle(),q.getOption1(),q.getOption2(),q.getOption3(),q.getOption4());
-//            questionForUser.add(qw);
-//        }
-        return new ResponseEntity<>(questionForUser,HttpStatus.OK);
+        Quiz quiz = quizDao.findById(id).get();
+        List<Integer> questionIds = quiz.getQuestionIds();
+        ResponseEntity<List<QuestionWrapper>> questionForUser = quizInterface.getQuestionsFromId(questionIds);
+        return questionForUser;
     }
 
     public ResponseEntity<Integer> calculateResult(Integer id, List<Response> responses) {
-//        Quiz quiz = quizDao.findById(id).get();
-//        List<Question> questions = quiz.getQuestions();
-        int right = 0 , i = 0;
-//        for(Response response : responses){
-//            if(response.getResponse().equals(questions.get(i).getRightAnswer()))
-//                right++;
-//            i++;
-//        }
-        return new ResponseEntity<>(right,HttpStatus.OK);
+        ResponseEntity<Integer> score = quizInterface.getScore(responses);
+        return score;
     }
 }
